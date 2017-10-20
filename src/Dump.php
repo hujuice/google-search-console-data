@@ -143,7 +143,7 @@ class Dump
         if (empty($this->_config['google']['secret'])) {
             $this->_config['google']['secret'] = 'secret.json'; // Default value
         }
-        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/../' . $this->_config['google']['secret']);
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . realpath(__DIR__ . '/../' . $this->_config['google']['secret']));
         $client = new \Google_Client();
         $client->useApplicationDefaultCredentials();
         $client->addScope(\Google_Service_Webmasters::WEBMASTERS_READONLY);
@@ -205,7 +205,7 @@ class Dump
      *
      * @param string $start_date    The start date, in a format accepted by strtotime()
      * @param string $end_date      The end date, in a format accepted by strtotime()
-      * @param boolean $header      Return the table header as first row
+     * @param boolean $header      Return the table header as first row
      * @return array                The wanted table
      */
     public function read($start_date = 'today -30 days', $end_date = 'today -1 day', $header = false)

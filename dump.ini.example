@@ -1,25 +1,47 @@
 [main]
+; Here is where the last Exception stack trace will be stored
+; Be sure to have proper permissions
 stack_trace = "/tmp/google_search_console_dump.stack_trace"
+
+; The timezone for human interaction, useful
 timezone = "UTC"
 
 [google]
+; The site property registerd in Google Search Console
 site = "www.example.com"
+
+; The API credentials file
 secret = "secret.json"
+
+; When filling the storage system, do not request data for more than max_days days
 max_days = 10
+
+; No more than limit records
 limit = 5000
 
+; When filling the storage system, wait an interval (seconds) between two subsequent requests
+interval = 2
+
 [storage]
+; You can choose between 'sqlite', 'csv' and 'mysql' storage system
+; Each storage system has its own configuration below
+; The unused storage configurations will be ignored
 type = "csv"
+
+[csv]
+; Path to the CSV file
+; Be sure to have proper permissions
 path = "/var/lib/google_search_console_dump/storage.csv"
 
-; Other admittable values are
-;type = "sqlite"
+[sqlite]
+; Path to the SQLite file
+; Be sure to have proper permissions
 path = "/var/lib/google_search_console_dump/storage.sqlite"
 
-; TODO
-;type = "mysql"
-;host = "localhost"
-;port = 3306
-;name = "google_search_console_dump"
-;user = "google_search_console_dump"
-;pass = "my_very_secret_password"
+[mysql]
+; MySQL/MariaDb parameters
+host = "localhost"
+port = 3306
+name = "google_search_console_dump"
+user = "google_search_console_dump"
+pass = "my_very_secret_password"
