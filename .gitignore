@@ -1,0 +1,9 @@
+# composer vendor dir
+/vendor
+
+# Private key file
+secret.json
+
+# User configurations
+dump.ini
+

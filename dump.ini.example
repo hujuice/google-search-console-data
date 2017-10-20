@@ -1,0 +1,25 @@
+[main]
+stack_trace = "/tmp/google_search_console_dump.stack_trace"
+timezone = "UTC"
+
+[google]
+site = "www.example.com"
+secret = "secret.json"
+max_days = 10
+limit = 5000
+
+[storage]
+type = "csv"
+path = "/var/lib/google_search_console_dump/storage.csv"
+
+; Other admittable values are
+;type = "sqlite"
+path = "/var/lib/google_search_console_dump/storage.sqlite"
+
+; TODO
+;type = "mysql"
+;host = "localhost"
+;port = 3306
+;name = "google_search_console_dump"
+;user = "google_search_console_dump"
+;pass = "my_very_secret_password"
