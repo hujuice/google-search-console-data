@@ -55,6 +55,20 @@ class Dump
     protected $_googleTz;
 
     /**
+     * Write messages to the system logger and to the stdout
+     *
+     * @param string $message           The message
+     * @param integer $priority         The priority
+     */
+    public static function logger($message, $priority = \LOG_INFO)
+    {
+        echo $message, PHP_EOL;
+        if ($priority < 6) {
+            syslog($priority, $message);
+        }
+    }
+
+    /**
      * Dump an exception and die
      *
      * NOTE Be careful when back to PHP 5: http://lt1.php.net/manual/en/function.set-exception-handler.php
@@ -77,10 +91,10 @@ class Dump
         }
 
         // Logging
-        syslog(LOG_ERR, $message);
+        self::logger($message, \LOG_ERR);
 
         // Immediately exit
-        die($message . PHP_EOL);
+        die('Abort' . PHP_EOL);
     }
 
     /**
@@ -95,18 +109,22 @@ class Dump
         ini_set('display_errors', 1);
         ini_set('html_errors', 0);
 
+        // Manage the system logger
+        openlog('gscd', LOG_CONS | LOG_ODELAY, LOG_USER);
+
         // Read the configuration file
         if ( ! $this->_config = parse_ini_file($config_path, true)) {
-            die('Unable to read the configuration file ' . $config_path);
+            self::logger('Unable to read the configuration file ' . $config_path, \LOG_CRIT);
+            die('Abort' . PHP_EOL);
         }
+
+        // Set an exception handler
+        set_exception_handler(array($this, '_exceptionHandler'));
 
         // No sense if the site is not specified in configuration
         if (empty($this->_config['google']['site'])) {
             throw new \Exception('The google site MUST be defined in the configuration file.');
         }
-
-        // Set an exception handler
-        set_exception_handler(array($this, '_exceptionHandler'));
 
         // Google timezone
         $this->_googleTz = new \DateTimeZone('PST');
@@ -126,18 +144,22 @@ class Dump
      */
     public function dump()
     {
+        // Start
+        self::logger('Google Search Console Dump started.', \LOG_INFO);
+
         // Set the starting date
         if ($last = $this->_storage->lastDate()) {
             $start_date = new \DateTime($last . ' + 1 day', $this->_googleTz);
         } else {
             $start_date = new \DateTime('today -90 days', $this->_googleTz);
         }
+        self::logger('Start date ' . $start_date->format('Y-m-d') . ' (PST).', \LOG_INFO);
 
         // Skip if the starting date is today, error if after today
         $today = new \DateTime('today', $this->_googleTz);
         $interval = $start_date->diff($today)->format('%r%a');
         if (0 == $interval) {
-            syslog(LOG_NOTICE, 'The dump is already updated: skip.');
+            self::logger('The dump is already updated: nothing to do.', \LOG_NOTICE);
             return 0;
         } elseif (0 >= $interval) {
             throw new \Exception('The last database day is AFTER today.');
@@ -164,6 +186,9 @@ class Dump
         if (empty($this->_config['google']['max_days'])) {
             $this->_config['google']['max_days'] = 10; // Default value
         }
+        self::logger('Will grab data for no more than ' . $this->_config['google']['max_days'] . ' days.', \LOG_INFO);
+        self::logger('================================', \LOG_INFO);
+
         $count = 0;
         $first = true;
 
@@ -175,8 +200,10 @@ class Dump
         // Iterate!
         while (($count < $this->_config['google']['max_days']) && ($date->diff($today)->format('%r%a') > 0)) {
             if ( ! $first) {
+                self::logger('(Don\'t overload the poor Google! Wait ' . $this->_config['google']['interval'] . ' seconds.)', \LOG_INFO);
                 sleep($this->_config['google']['interval']);
             }
+            $first = false;
 
             // Prepare the query
             $date_as_string = $date->format('Y-m-d');
@@ -184,6 +211,7 @@ class Dump
             $request->setEndDate($date_as_string);
 
             // Query!
+            self::logger('Requesting data for ' . $date_as_string . ' (PST).', \LOG_INFO);
             $query = $service->searchanalytics->query($this->_config['google']['site'], $request);
             foreach($query->getRows() as $row) {
                 $this->_storage->insert(array(
@@ -198,12 +226,14 @@ class Dump
                 ));
             }
 
-            syslog(LOG_INFO, 'Data for ' . $date_as_string . ' stored.');
+            self::logger('Data for ' . $date_as_string . ' (PST) stored.', \LOG_NOTICE);
 
             $date->add(new \DateInterval('P1D'));
             $count++;
         }
 
+        self::logger('================================', \LOG_INFO);
+        self::logger('Data for ' . $count . ' days has been grabbed.', \LOG_INFO);
         return $count;
     }
 
