@@ -108,6 +108,7 @@ class Sqlite Implements \GSC\Storage\StorageInterface
             throw new \Exception('The data array MUST have all the following ordered keys: ' . implode(',', array_keys(self::$analysis)) . '.');
         }
 
+        // Write the query
         $sql  = 'INSERT INTO ' . $this->_table_name . ' (';
         $columns = array();
         foreach (array_keys($data) as $column_def) {
@@ -124,18 +125,10 @@ class Sqlite Implements \GSC\Storage\StorageInterface
 
         $sth = $this->_db->prepare($sql);
         foreach ($data as $column_def => $value) {
-            /*
-            switch (gettype($value)) {
-                case 'integer':
-                    $type = \PDO::PARAM_INT;
-                    break;
-                default:
-                    $type = \PDO::PARAM_STR;
-            }
-            */
             $sth->bindValue(':' . $column_def, $value);
         }
 
+        // Execute!
         $sth->execute();
     }
 

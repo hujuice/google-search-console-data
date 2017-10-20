@@ -3,7 +3,7 @@
 ; Be sure to have proper permissions
 stack_trace = "/tmp/google_search_console_dump.stack_trace"
 
-; The timezone for human interaction, useful
+; The timezone for human interaction, useful for data reading
 timezone = "UTC"
 
 [google]
@@ -28,17 +28,10 @@ interval = 2
 ; The unused storage configurations will be ignored
 type = "csv"
 
-[csv]
-; Path to the CSV file
+; Path to the CSV or SQLite file
 ; Be sure to have proper permissions
 path = "/var/lib/google_search_console_dump/storage.csv"
 
-[sqlite]
-; Path to the SQLite file
-; Be sure to have proper permissions
-path = "/var/lib/google_search_console_dump/storage.sqlite"
-
-[mysql]
 ; MySQL/MariaDb parameters
 host = "localhost"
 port = 3306

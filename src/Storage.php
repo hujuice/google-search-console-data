@@ -61,19 +61,21 @@ class Storage Implements \GSC\Storage\StorageInterface
     /**
      * Build the storage object
      *
-     * @param string $config        The storage configuration
+     * @param array $config         The storage configuration
      * @throw \Exception            When the declared storage type is not admittable
      */
     public function __construct(array $config)
     {
         if (empty($config['type'])) {
-            $config['type'] = 'Csv'; // Default value
+            $config['type'] = 'csv'; // Default value
         }
 
+        // Create the storage class
         $class_name = '\\GSC\\Storage\\' . ucfirst(strtolower($config['type']));
         unset($config['type']);
         $this->_storage = new $class_name($config);
 
+        // Verify that the storage implements the appropriate interface
         if ( ! is_a($this->_storage, '\GSC\Storage\StorageInterface')) {
             throw new \Exception('There\'s no storage type called ' . $class_name . '.');
         }

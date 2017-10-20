@@ -112,6 +112,9 @@ class Dump
         $this->_googleTz = new \DateTimeZone('PST');
 
         // Initialize the storage
+        if (empty($this->_config['storage'])) {
+            $this->_config['storage'] = array('type' => 'csv'); // Default value
+        }
         $this->_storage = new Storage($this->_config['storage']);
     }
 
@@ -129,7 +132,8 @@ class Dump
         } else {
             $start_date = new \DateTime('today -90 days', $this->_googleTz);
         }
-        // Skip if today, error if after today
+
+        // Skip if the starting date is today, error if after today
         $today = new \DateTime('today', $this->_googleTz);
         $interval = $start_date->diff($today)->format('%r%a');
         if (0 == $interval) {
@@ -139,7 +143,7 @@ class Dump
             throw new \Exception('The last database day is AFTER today.');
         }
 
-        // Service initialization
+        // Google API client initialization
         if (empty($this->_config['google']['secret'])) {
             $this->_config['google']['secret'] = 'secret.json'; // Default value
         }
@@ -151,34 +155,35 @@ class Dump
         $request = new \Google_Service_Webmasters_SearchAnalyticsQueryRequest();
         $request->setDimensions(array('query', 'page', 'country', 'device'));
         if (empty($this->_config['google']['limit'])) {
-            $limit = 5000; // Default
-        } else {
-            $limit = $this->_config['google']['limit'];
+            $this->_config['google']['limit'] = 5000; // Default value
         }
-        $request->setRowLimit($limit);
+        $request->setRowLimit($this->_config['google']['limit']);
 
         // Prepare the iteration parameters
         $date = $start_date;
         if (empty($this->_config['google']['max_days'])) {
-            $count = 10; // Default
-        } else {
-            $count = $this->_config['google']['max_days'];
+            $this->_config['google']['max_days'] = 10; // Default value
         }
+        $count = 0;
         $first = true;
 
+        // Don't overload the poor Google
+        if (empty($this->_config['google']['interval'])) {
+            $this->_config['google']['interval'] = 2; // Default value
+        }
+
         // Iterate!
-        while ($count && $date->diff($today)->format('%r%a')) {
+        while (($count < $this->_config['google']['max_days']) && ($date->diff($today)->format('%r%a') > 0)) {
             if ( ! $first) {
-                // Don't overload the poor Google
-                if (empty($this->_config['google']['interval'])) {
-                    $this->_config['google']['interval'] = 2; // Default value
-                }
                 sleep($this->_config['google']['interval']);
             }
+
+            // Prepare the query
             $date_as_string = $date->format('Y-m-d');
             $request->setStartDate($date_as_string);
             $request->setEndDate($date_as_string);
 
+            // Query!
             $query = $service->searchanalytics->query($this->_config['google']['site'], $request);
             foreach($query->getRows() as $row) {
                 $this->_storage->insert(array(
@@ -196,8 +201,10 @@ class Dump
             syslog(LOG_INFO, 'Data for ' . $date_as_string . ' stored.');
 
             $date->add(new \DateInterval('P1D'));
-            $count--;
+            $count++;
         }
+
+        return $count;
     }
 
     /**
@@ -212,20 +219,23 @@ class Dump
     {
         // Request dates are intended as local dates, not Google dates
         if (empty($this->_config['main']['timezone'])) {
-            $this->_config['main']['timezone'] = 'UTC'; // Default
+            $this->_config['main']['timezone'] = 'UTC'; // Default value
         }
         $application_timezone = new \DateTimeZone($this->_config['main']['timezone']);
 
+        // Convert request local dates to Google dates
         $start_date = new \DateTime($start_date, $application_timezone);
         $start_date->setTimezone($this->_googleTz);
         $end_date = new \DateTime($end_date, $application_timezone);
         $end_date->setTimezone($this->_googleTz);
 
+        // Check if $end_date is consequent to $start_date
         $interval = $start_date->diff($end_date);
         if ('-' == $interval->format('%r')) {
             return array();
         }
 
+        // Request!
         return $this->_storage->select($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $header);
     }
 }
