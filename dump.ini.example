@@ -19,9 +19,6 @@ max_days = 10
 ; No more than limit records
 limit = 5000
 
-; When filling the storage system, wait an interval (seconds) between two subsequent requests
-interval = 2
-
 [storage]
 ; You can choose between 'sqlite', 'csv' and 'mysql' storage system
 ; Each storage system has its own configuration below

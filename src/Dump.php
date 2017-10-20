@@ -188,22 +188,10 @@ class Dump
         }
         self::logger('Will grab data for no more than ' . $this->_config['google']['max_days'] . ' days.', \LOG_INFO);
         self::logger('================================', \LOG_INFO);
-
         $count = 0;
-        $first = true;
-
-        // Don't overload the poor Google
-        if (empty($this->_config['google']['interval'])) {
-            $this->_config['google']['interval'] = 2; // Default value
-        }
 
         // Iterate!
         while (($count < $this->_config['google']['max_days']) && ($date->diff($today)->format('%r%a') > 0)) {
-            if ( ! $first) {
-                self::logger('(Don\'t overload the poor Google! Wait ' . $this->_config['google']['interval'] . ' seconds.)', \LOG_INFO);
-                sleep($this->_config['google']['interval']);
-            }
-            $first = false;
 
             // Prepare the query
             $date_as_string = $date->format('Y-m-d');
