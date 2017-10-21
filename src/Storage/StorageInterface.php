@@ -70,5 +70,5 @@ interface StorageInterface
       * @param string $end_date     The highest date
       * @return array               The data table
       */
-    public function select($start_date, $end_date, $header = false);
+    public function select($start_date, $end_date);
 }

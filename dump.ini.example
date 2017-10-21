@@ -1,4 +1,9 @@
 [main]
+; You can choose between 'sqlite', 'csv' and 'mysql' storage system
+; Each storage system has its own configuration below
+; The unused storage configurations below will be ignored
+storage = "csv"
+
 ; Here is where the last Exception stack trace will be stored
 ; Be sure to have proper permissions
 stack_trace = "/tmp/google_search_console_dump.stack_trace"
@@ -19,16 +24,17 @@ max_days = 10
 ; No more than limit records
 limit = 5000
 
-[storage]
-; You can choose between 'sqlite', 'csv' and 'mysql' storage system
-; Each storage system has its own configuration below
-; The unused storage configurations will be ignored
-type = "csv"
-
-; Path to the CSV or SQLite file
+[csv]
+; Path to the CSV file
 ; Be sure to have proper permissions
 path = "/var/lib/google_search_console_dump/storage.csv"
 
+[sqlite]
+; Path to the SQLite file
+; Be sure to have proper permissions
+path = "/var/lib/google_search_console_dump/storage.sqlite"
+
+[mysql]
 ; MySQL/MariaDb parameters
 host = "localhost"
 port = 3306

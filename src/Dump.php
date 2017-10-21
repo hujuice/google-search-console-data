@@ -130,10 +130,13 @@ class Dump
         $this->_googleTz = new \DateTimeZone('PST');
 
         // Initialize the storage
-        if (empty($this->_config['storage'])) {
-            $this->_config['storage'] = array('type' => 'csv'); // Default value
+        if (empty($this->_config['main']['storage'])) {
+            $this->_config['main']['storage'] = 'csv'; // Default value
         }
-        $this->_storage = new Storage($this->_config['storage']);
+        if (empty($this->_config[$this->_config['main']['storage']])) {
+            $this->_config[$this->_config['main']['storage']] = array(); // Default value
+        }
+        $this->_storage = new Storage($this->_config['main']['storage'], $this->_config[$this->_config['main']['storage']]);
     }
 
     /**
@@ -221,6 +224,7 @@ class Dump
             // Query!
             self::logger('Requesting data for ' . $date_as_string . ' (PST).', \LOG_INFO);
             $query = $service->searchanalytics->query($this->_config['google']['site'], $request);
+            self::logger('Storing data for ' . $date_as_string . ' (PST).', \LOG_INFO);
             foreach($query->getRows() as $row) {
                 $this->_storage->insert(array(
                     'date'          => $date_as_string,

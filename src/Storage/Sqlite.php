@@ -154,24 +154,16 @@ class Sqlite Implements \GSC\Storage\StorageInterface
      *
      * @param string $start_date   The lowest date
      * @param string $end_date     The highest date
-     * @param boolean $header      Return the table header as first row
      * @return array               The data table
      */
-    public function select($start_date, $end_date, $header = false)
+    public function select($start_date, $end_date)
     {
-        $table = array();
-        if ($header) {
-            $table[] = array_keys(\GSC\Storage::$analysis);
-        }
-
         $sql = 'SELECT * FROM ' . $this->_table_name . ' WHERE date >= :start_date AND date <= :end_date';
         $sth = $this->_db->prepare($sql);
         $sth->bindValue(':start_date', $start_date);
         $sth->bindValue(':end_date', $end_date);
         $sth->execute();
 
-        $table = $table + $sth->fetchAll(\PDO::FETCH_NUM);
-
-        return $table;
+        return $sth->fetchAll(\PDO::FETCH_NUM);
     }
 }

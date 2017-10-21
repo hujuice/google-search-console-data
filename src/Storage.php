@@ -30,7 +30,7 @@ namespace GSC;
  *
  * @package     GSC
  */
-class Storage Implements \GSC\Storage\StorageInterface
+class Storage
 {
     /**
      * The storage object
@@ -61,18 +61,14 @@ class Storage Implements \GSC\Storage\StorageInterface
     /**
      * Build the storage object
      *
+     * @param string $type          The storage type
      * @param array $config         The storage configuration
      * @throw \Exception            When the declared storage type is not admittable
      */
-    public function __construct(array $config)
+    public function __construct($type, array $config)
     {
-        if (empty($config['type'])) {
-            $config['type'] = 'csv'; // Default value
-        }
-
         // Create the storage class
-        $class_name = '\\GSC\\Storage\\' . ucfirst(strtolower($config['type']));
-        unset($config['type']);
+        $class_name = '\\GSC\\Storage\\' . ucfirst(strtolower($type));
         $this->_storage = new $class_name($config);
 
         // Verify that the storage implements the appropriate interface
@@ -82,23 +78,15 @@ class Storage Implements \GSC\Storage\StorageInterface
     }
 
     /**
-     * Return the first inserted date
+     * Try to call storage methods
      *
-     * @return string               The first inserted date
+     * @param string $name              The wanted method
+     * @param array $args               The passing arguments
+     * @return mixed                    The method return value
      */
-    public function firstDate()
+    public function __call($name, $args)
     {
-        return $this->_storage->firstDate();
-    }
-
-    /**
-     * Return the last inserted date
-     *
-     * @return string               The last inserted date
-     */
-    public function lastDate()
-    {
-        return $this->_storage->lastDate();
+        return call_user_func_array(array($this->_storage, $name), $args);
     }
 
     /**
@@ -127,6 +115,11 @@ class Storage Implements \GSC\Storage\StorageInterface
      */
     public function select($start_date, $end_date, $header = false)
     {
-        return $this->_storage->select($start_date, $end_date, $header);
+        $table = array();
+        if ($header) {
+            $table[] = array_keys(\GSC\Storage::$analysis);
+        }
+
+        return $table + $this->_storage->select($start_date, $end_date);
     }
 }
