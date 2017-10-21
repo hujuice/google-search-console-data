@@ -4,7 +4,7 @@
 Google Search Console let you access data not older than 90 days.  
 The purpose of this application is to access the Google Search Console API and store the data in a local storage system.
 
-The application also has a simple method to read the stored informations given a date interval.  
+The application also has a simple method to read the stored informations, given a date interval.  
 You can write your own analysis logic starting from that.
 
 You can retrieve data for many website simply providing many configrations and secret files couples (see below).
@@ -23,11 +23,11 @@ You can have many secret files for one installed application.
 
 ### 3. Create a configuration file ###
 Copy the `www_example_com.ini.example` file as `www_example_com.ini` (according to your website name) and edit it following your preferences.  
-What you really MUST edit is the site in the `[google]` section. All the other values are tuning values.
+What you really MUST edit is the site and the secret file names in the `[google]` section. All the other values are tuning values.
 
 If you decide to store the data in a file based way (CSV or SQLite), you will also manage the file permissions.  
 If you decide to store the data in a MySQL database, you will also prepare an empty database.  
-The applications is smart enough to generate the file structure or the empty table befor the first run.  
+For SQLite or MySQL databases, the applications is smart enough to generate the file structure or the empty table befor the first run.  
 
 You can have many configuration files for one installed application.
 
