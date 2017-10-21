@@ -2,8 +2,8 @@
 /vendor
 
 # Private key file
-secret.json
+www_istat_it-secret.json
 
 # User configurations
-dump.ini
+www_istat_it.ini
 

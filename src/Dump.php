@@ -53,6 +53,13 @@ class Dump
      * @var \DateTimeZone   The Google preferred timezone
      */
     protected $_googleTz;
+    
+    /**
+     * The configuration file path (where the secret file also is)
+     *
+     * @var string          The configuration file path (where the secret file also is)
+     */
+    protected $_configDir;
 
     /**
      * Write messages to the system logger and to the stdout
@@ -137,6 +144,9 @@ class Dump
             $this->_config[$this->_config['main']['storage']] = array(); // Default value
         }
         $this->_storage = new Storage($this->_config['main']['storage'], $this->_config[$this->_config['main']['storage']]);
+        
+        // Remember the configuration file dir
+        $this->_configDir = dirname($config_path);
     }
 
     /**
@@ -167,6 +177,17 @@ class Dump
      */
     public function dump()
     {
+        // No sense if the secret file is not specified in configuration
+        if (empty($this->_config['google']['secret'])) {
+            throw new \Exception('The google secret file MUST be defined in the configuration file.');
+        }
+        
+        // Secret file
+        $secret_file = realpath($this->_configDir . '/' . $this->_config['google']['secret']);
+        if ( ! is_readable($secret_file)) {
+            throw new \Exception('The google secret file is not readable.');
+        }
+        
         // Start
         self::logger('Google Search Console Dump started.', \LOG_INFO);
 
@@ -176,7 +197,7 @@ class Dump
         } else {
             $start_date = new \DateTime('today -90 days', $this->_googleTz);
         }
-        self::logger('Start date ' . $start_date->format('Y-m-d') . ' (PST).', \LOG_INFO);
+        self::logger('Start date ' . $start_date->format('Y-m-d') . ' PST.', \LOG_INFO);
 
         // Skip if the starting date is today, error if after today
         $today = new \DateTime('today', $this->_googleTz);
@@ -189,10 +210,7 @@ class Dump
         }
 
         // Google API client initialization
-        if (empty($this->_config['google']['secret'])) {
-            $this->_config['google']['secret'] = 'secret.json'; // Default value
-        }
-        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . realpath(__DIR__ . '/../' . $this->_config['google']['secret']));
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $secret_file);
         $client = new \Google_Client();
         $client->useApplicationDefaultCredentials();
         $client->addScope(\Google_Service_Webmasters::WEBMASTERS_READONLY);
@@ -222,9 +240,9 @@ class Dump
             $request->setEndDate($date_as_string);
 
             // Query!
-            self::logger('Requesting data for ' . $date_as_string . ' (PST).', \LOG_INFO);
+            self::logger('Requesting data for ' . $date_as_string . ' PST.', \LOG_INFO);
             $query = $service->searchanalytics->query($this->_config['google']['site'], $request);
-            self::logger('Storing data for ' . $date_as_string . ' (PST).', \LOG_INFO);
+            self::logger('Data obtained. Storing...', \LOG_INFO);
             foreach($query->getRows() as $row) {
                 $this->_storage->insert(array(
                     'date'          => $date_as_string,
@@ -238,7 +256,7 @@ class Dump
                 ));
             }
 
-            self::logger('Data for ' . $date_as_string . ' (PST) stored.', \LOG_NOTICE);
+            self::logger('Data for ' . $date_as_string . ' PST stored.', \LOG_NOTICE);
 
             $date->add(new \DateInterval('P1D'));
             $count++;

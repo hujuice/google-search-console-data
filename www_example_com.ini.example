@@ -16,7 +16,8 @@ timezone = "UTC"
 site = "www.example.com"
 
 ; The API credentials file
-secret = "secret.json"
+; The file must be in the same directory of the configuration file
+secret = "www_example_com-secret.json"
 
 ; When filling the storage system, do not request data for more than max_days days
 max_days = 10

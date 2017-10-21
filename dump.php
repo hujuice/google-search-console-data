@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * LICENSE
@@ -22,13 +23,17 @@
  * @version     1.0.0
  */
 
+if (empty($argv[1])) {
+    die('You MUST provide a configuration file as argument. Run, for example, \'php dump.php www_example_com.ini\'.' . PHP_EOL);
+}
 
 // Autoloading
 // See https://getcomposer.org/doc/01-basic-usage.md#autoloading
 $loader = require_once __DIR__ . '/vendor/autoload.php';
 $loader->addPsr4('GSC\\', __DIR__ . '/src');
 
-// Run!!!
-$gscd = new \GSC\Dump(__DIR__ . '/dump.ini');
+// Create the application object
+$gscd = new \GSC\Dump(realpath($argv[1]));
 
+// Run!!!
 $gscd->dump();

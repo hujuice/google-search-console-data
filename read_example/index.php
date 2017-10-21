@@ -1,6 +1,30 @@
 <?php
-// Make a softlink to this file somewhere in your htdocs
+// -------------------------------------------------------------
+// Copy to this file somewhere in your htdocs, after grabbing
+// some information. Then provide your application path and
+// configuration file path.
+// -------------------------------------------------------------
 
+// =============================================================
+//                  Here is the working code
+// =============================================================
+// Application path
+$application_path = '/usr/local/gsc';
+$config_path = $application_path . '/www_example_com.ini';
+
+// Autoloading
+// See https://getcomposer.org/doc/01-basic-usage.md#autoloading
+$loader = require_once $application_path . '/vendor/autoload.php';
+$loader->addPsr4('GSC\\', $application_path . '/src');
+
+// Create the application object
+$gscd = new \GSC\Dump($config_path);
+
+// Storage info
+$first_date = $gscd->firstDate();
+$last_date = $gscd->lastDate();
+
+// Dates
 if (empty($_GET['start_date'])) {
     $start_date = 'today -1 day';
 } else {
@@ -12,23 +36,10 @@ if (empty($_GET['end_date'])) {
     $end_date = $_GET['end_date'];
 }
 
-// =============================================================
-//                  Here is the working code
-// =============================================================
-// Autoloading
-// See https://getcomposer.org/doc/01-basic-usage.md#autoloading
-$loader = require_once __DIR__ . '/../vendor/autoload.php';
-$loader->addPsr4('GSC\\', __DIR__ . '/../src');
-
 // Run!!!
-$gscd = new \GSC\Dump(__DIR__ . '/../dump.ini');
-
 $data = $gscd->read($start_date, $end_date, true);
-
-$first_date = $gscd->firstDate();
-$last_date = $gscd->lastDate();
 // =============================================================
-//                  Here is the working code
+//                  /Here is the working code
 // =============================================================
 ?>
 
@@ -93,7 +104,7 @@ foreach ($data as $row) {
 }
 echo '</tbody>', PHP_EOL;
 // =============================================================
-//                  HTML annoyances
+//                  /HTML annoyances
 // =============================================================
 ?>
       </table>
