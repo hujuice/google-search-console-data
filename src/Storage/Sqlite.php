@@ -145,6 +145,19 @@ class Sqlite Implements \GSC\Storage\StorageInterface
      */
     public function select($start_date, $end_date, $header = false)
     {
-        return array();
+        $table = array();
+        if ($header) {
+            $table[] = array_keys(\GSC\Storage::$analysis);
+        }
+
+        $sql = 'SELECT * FROM ' . $this->_table_name . ' WHERE date >= :start_date AND date <= :end_date';
+        $sth = $this->_db->prepare($sql);
+        $sth->bindValue(':start_date', $start_date);
+        $sth->bindValue(':end_date', $end_date);
+        $sth->execute();
+
+        $table = $table + $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $table;
     }
 }
