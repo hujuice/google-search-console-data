@@ -190,6 +190,8 @@ class Dump
         
         // Start
         self::logger('Google Search Console Dump started.', \LOG_INFO);
+        $google_now = new \DateTime('now', $this->_googleTz);
+        self::logger('Please, note that Google date is now ' . $google_now->format('Y-m-d') . '.', \LOG_INFO);
 
         // Set the starting date
         if ($last = $this->_storage->lastDate()) {
@@ -277,17 +279,8 @@ class Dump
      */
     public function read($start_date = 'today -30 days', $end_date = 'today -1 day', $header = false)
     {
-        // Request dates are intended as local dates, not Google dates
-        if (empty($this->_config['main']['timezone'])) {
-            $this->_config['main']['timezone'] = 'UTC'; // Default value
-        }
-        $application_timezone = new \DateTimeZone($this->_config['main']['timezone']);
-
-        // Convert request local dates to Google dates
-        $start_date = new \DateTime($start_date, $application_timezone);
-        $start_date->setTimezone($this->_googleTz);
-        $end_date = new \DateTime($end_date, $application_timezone);
-        $end_date->setTimezone($this->_googleTz);
+        $start_date = new \DateTime($start_date, $this->_googleTz);
+        $end_date = new \DateTime($end_date, $this->_googleTz);
 
         // Check if $end_date is consequent to $start_date
         $interval = $start_date->diff($end_date);

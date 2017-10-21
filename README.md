@@ -55,3 +55,7 @@ If you run it as cronjob and if you daily grab, e.g., 10 days, you will have you
 
 You can read the data in a very simple way. Take a look to the web based example in `read_example/index.php`.  
 If you want more complex data analysis, you should write your own code, based on the very simple data table.
+
+## Notes ##
+
+For a Python solution, please read this: <https://adaptpartners.com/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/>.

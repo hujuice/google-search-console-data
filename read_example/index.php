@@ -76,12 +76,17 @@ $data = $gscd->read($start_date, $end_date, true);
     </nav>
 
     <div class="container">
-
-      <table class="table  table-striped">
+    
 <?php
 // =============================================================
 //                  HTML annoyances
 // =============================================================
+// Notify the Google time (PST)
+$google_now = new \DateTime('now', new \DateTimeZone('PST'));
+echo '<p class="text-right">Google date, now: ' . $google_now->format('Y-m-d') . '</p>';
+
+echo '<table class="table  table-striped">', PHP_EOL;
+
 // Table caption
 echo '<caption>Google Search Console Data from <code>' . $start_date . '</code> to <code>' . $end_date . '</code> (data are available from ' . $first_date . ' to ' . $last_date . ')</caption>', PHP_EOL;
 
@@ -103,11 +108,11 @@ foreach ($data as $row) {
     echo '</tr>', PHP_EOL;
 }
 echo '</tbody>', PHP_EOL;
+echo '</table>', PHP_EOL;
 // =============================================================
 //                  /HTML annoyances
 // =============================================================
 ?>
-      </table>
 
       <hr>
 
