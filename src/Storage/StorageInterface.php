@@ -42,6 +42,13 @@ interface StorageInterface
     public function __construct(array $config);
 
     /**
+     * Return the first inserted date
+     *
+     * @return string               The first inserted date
+     */
+    public function firstDate();
+
+    /**
      * Return the last inserted date
      *
      * @return string               The last inserted date

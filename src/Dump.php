@@ -137,6 +137,26 @@ class Dump
     }
 
     /**
+     * Give the first date of the dump
+     *
+     * @return string                   The first day of the dump
+     */
+    public function firstDate()
+    {
+        return $this->_storage->firstDate();
+    }
+
+    /**
+     * Give the last date of the dump
+     *
+     * @return string                   The last day of the dump
+     */
+    public function lastDate()
+    {
+        return $this->_storage->lastDate();
+    }
+
+    /**
      * Execute the dump
      *
      * @return integer                  The number of inserted days

@@ -89,6 +89,20 @@ class Sqlite Implements \GSC\Storage\StorageInterface
     }
 
     /**
+     * Return the first inserted date
+     *
+     * @return string               The first inserted date
+     */
+    public function firstDate()
+    {
+        $sql = 'SELECT MIN(date) as firstDate FROM ' . $this->_table_name;
+        $sth = $this->_db->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetch();
+        return $result['firstDate'];
+    }
+
+    /**
      * Return the last inserted date
      *
      * @return string               The last inserted date

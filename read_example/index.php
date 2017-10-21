@@ -1,3 +1,37 @@
+<?php
+// Make a softlink to this file somewhere in your htdocs
+
+if (empty($_GET['start_date'])) {
+    $start_date = 'today -1 day';
+} else {
+    $start_date = $_GET['start_date'];
+}
+if (empty($_GET['end_date'])) {
+    $end_date = 'today -3 days';
+} else {
+    $end_date = $_GET['end_date'];
+}
+
+// =============================================================
+//                  Here is the working code
+// =============================================================
+// Autoloading
+// See https://getcomposer.org/doc/01-basic-usage.md#autoloading
+$loader = require_once __DIR__ . '/../vendor/autoload.php';
+$loader->addPsr4('GSC\\', __DIR__ . '/../src');
+
+// Run!!!
+$gscd = new \GSC\Dump(__DIR__ . '/../dump.ini');
+
+$data = $gscd->read($start_date, $end_date, true);
+
+$first_date = $gscd->firstDate();
+$last_date = $gscd->lastDate();
+// =============================================================
+//                  Here is the working code
+// =============================================================
+?>
+
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
@@ -6,7 +40,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Google Search Console Dump data</title>
+        <title>Google Search Console Data</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -25,7 +59,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Google Search Console Dump data</a>
+          <a class="navbar-brand" href="#">Google Search Console Data</a>
         </div>
       </div>
     </nav>
@@ -34,35 +68,13 @@
 
       <table class="table  table-striped">
 <?php
-if (empty($_GET['start_date'])) {
-    $start_date = 'today -1 day';
-} else {
-    $start_date = $_GET['start_date'];
-}
-if (empty($_GET['end_date'])) {
-    $end_date = 'today -3 days';
-} else {
-    $end_date = $_GET['end_date'];
-}
-echo '<caption>Google Search Console Dump from <code>' . $start_date . '</code> to <code>' . $end_date . '</code></caption>', PHP_EOL;
-
 // =============================================================
-//                  Here is the working code
+//                  HTML annoyances
 // =============================================================
-// Autoloading
-// See https://getcomposer.org/doc/01-basic-usage.md#autoloading
-$loader = require_once __DIR__ . '/../vendor/autoload.php';
-$loader->addPsr4('GSC\\', __DIR__ . '/../src');
+// Table caption
+echo '<caption>Google Search Console Data from <code>' . $start_date . '</code> to <code>' . $end_date . '</code> (data are available from ' . $first_date . ' to ' . $last_date . ')</caption>', PHP_EOL;
 
-// Run!!!
-$gscd = new \GSC\Dump(__DIR__ . '/../dump.ini');
-
-$data = $gscd->read($start_date, $end_date, true);
-// =============================================================
-//                  Here is the working code
-// =============================================================
-
-// HTML annoyances
+// Table header
 $header = array_shift($data);
 echo '<thead><tr>';
 foreach ($header as $cell) {
@@ -70,6 +82,7 @@ foreach ($header as $cell) {
 }
 echo '</tr></thead>', PHP_EOL;
 
+// Table body
 echo '<tbody>', PHP_EOL;
 foreach ($data as $row) {
     echo '<tr>';
@@ -79,7 +92,9 @@ foreach ($data as $row) {
     echo '</tr>', PHP_EOL;
 }
 echo '</tbody>', PHP_EOL;
-
+// =============================================================
+//                  HTML annoyances
+// =============================================================
 ?>
       </table>
 

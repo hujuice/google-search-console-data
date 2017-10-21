@@ -82,6 +82,16 @@ class Storage Implements \GSC\Storage\StorageInterface
     }
 
     /**
+     * Return the first inserted date
+     *
+     * @return string               The first inserted date
+     */
+    public function firstDate()
+    {
+        return $this->_storage->firstDate();
+    }
+
+    /**
      * Return the last inserted date
      *
      * @return string               The last inserted date
