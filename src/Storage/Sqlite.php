@@ -26,33 +26,12 @@
 namespace GSC\Storage;
 
 /**
- * Facade class for the storage system.
+ * SQLite storage
  *
  * @package     GSC\Storage
  */
-class Sqlite Implements \GSC\Storage\StorageInterface
+class Sqlite extends DbAbstract Implements \GSC\Storage\StorageInterface
 {
-    /**
-     * The database object
-     *
-     * @var \PDO            The PDO object
-     */
-    protected $_db;
-
-    /**
-     * The analysis table name
-     *
-     * @var string                      The table name
-     */
-    protected $_table_name = 'analysis';
-
-    /**
-     * Insert SQL
-     *
-     * @var string          The insert sql has a fixed structure, better store it
-     */
-    protected $_insert;
-
     /**
      * Create the database object
      *
@@ -76,94 +55,7 @@ class Sqlite Implements \GSC\Storage\StorageInterface
         );
         $this->_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        // Create the table if not exist
-        $sql  = 'CREATE TABLE IF NOT EXISTS ' . $this->_table_name . ' (';
-        $columns = array();
-        foreach (\GSC\Storage::$analysis as $column_def => $constraint) {
-            $columns[] = $column_def . ' ' . $constraint;
-        }
-        $sql .= implode(', ', $columns);
-        $sql .= ')';
-        $sth = $this->_db->prepare($sql);
-        $sth->execute();
-    }
-
-    /**
-     * Return the first inserted date
-     *
-     * @return string               The first inserted date
-     */
-    public function firstDate()
-    {
-        $sql = 'SELECT MIN(date) as firstDate FROM ' . $this->_table_name;
-        $sth = $this->_db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch();
-        return $result['firstDate'];
-    }
-
-    /**
-     * Return the last inserted date
-     *
-     * @return string               The last inserted date
-     */
-    public function lastDate()
-    {
-        $sql = 'SELECT MAX(date) as lastDate FROM ' . $this->_table_name;
-        $sth = $this->_db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch();
-        return $result['lastDate'];
-    }
-
-    /**
-     * Store a record
-     *
-     * @param array                 The record
-     * @throw \Exception            When the array is not well formed
-     */
-    public function insert(array $data)
-    {
-        // Check the data structure before
-        if (array_keys($data) != array_keys(\GSC\Storage::$analysis)) {
-            throw new \Exception('The data array MUST have all the following ordered keys: ' . implode(',', array_keys(self::$analysis)) . '.');
-        }
-
-        // Prepare the SQL
-        if (empty($this->_insert)) {
-            $columns = array();
-            foreach (array_keys($data) as $column_def) {
-                $columns[] = ':' . $column_def;
-            }
-            $this->_insert  = 'INSERT INTO ' . $this->_table_name .
-                ' (' . implode(', ', array_keys($data)) . ')
-                VALUES (' . implode(', ', $columns) . ')';
-        }
-
-        $sth = $this->_db->prepare($this->_insert);
-        foreach ($data as $column_def => $value) {
-            $sth->bindValue(':' . $column_def, $value);
-        }
-
-        // Execute!
-        $sth->execute();
-    }
-
-    /**
-     * Read a list of record, selected by date interval
-     *
-     * @param string $start_date   The lowest date
-     * @param string $end_date     The highest date
-     * @return array               The data table
-     */
-    public function select($start_date, $end_date)
-    {
-        $sql = 'SELECT * FROM ' . $this->_table_name . ' WHERE date >= :start_date AND date <= :end_date';
-        $sth = $this->_db->prepare($sql);
-        $sth->bindValue(':start_date', $start_date);
-        $sth->bindValue(':end_date', $end_date);
-        $sth->execute();
-
-        return $sth->fetchAll(\PDO::FETCH_NUM);
+        // Build the table if not exists
+        parent::__construct(array());
     }
 }
