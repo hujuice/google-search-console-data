@@ -47,6 +47,13 @@ class Sqlite Implements \GSC\Storage\StorageInterface
     protected $_table_name = 'analysis';
 
     /**
+     * Insert SQL
+     *
+     * @var string          The insert sql has a fixed structure, better store it
+     */
+    protected $_insert;
+
+    /**
      * Create the database object
      *
      * @param array $config             Contains the database path
@@ -108,22 +115,18 @@ class Sqlite Implements \GSC\Storage\StorageInterface
             throw new \Exception('The data array MUST have all the following ordered keys: ' . implode(',', array_keys(self::$analysis)) . '.');
         }
 
-        // Write the query
-        $sql  = 'INSERT INTO ' . $this->_table_name . ' (';
-        $columns = array();
-        foreach (array_keys($data) as $column_def) {
-            $columns[] = $column_def;
+        // Prepare the SQL
+        if (empty($this->_insert)) {
+            $columns = array();
+            foreach (array_keys($data) as $column_def) {
+                $columns[] = ':' . $column_def;
+            }
+            $this->_insert  = 'INSERT INTO ' . $this->_table_name .
+                ' (' . implode(', ', array_keys($data)) . ')
+                VALUES (' . implode(', ', $columns) . ')';
         }
-        $sql .= implode(', ', $columns);
-        $sql .= ') VALUES (';
-        $values = array();
-        foreach (array_keys($data) as $column_def) {
-            $values[] = ':' . $column_def;
-        }
-        $sql .= implode(', ', $values);
-        $sql .= ')';
 
-        $sth = $this->_db->prepare($sql);
+        $sth = $this->_db->prepare($this->_insert);
         foreach ($data as $column_def => $value) {
             $sth->bindValue(':' . $column_def, $value);
         }
