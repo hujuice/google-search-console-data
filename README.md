@@ -35,5 +35,5 @@ php dump.php
 ```
 to retrieve the Google Search Console data.
 
-You can read the data in a very simple way. Take a look to the web based example in the `read/` directory.
+You can read the data in a very simple way. Take a look to the web based example in the `read_example/` directory.
 If you want more complex data analysis, you should write your own code, based on the very simple data table.
