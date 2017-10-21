@@ -254,8 +254,6 @@ class Dump
         }
 
         // Request!
-        echo $start_date->format('Y-m-d'), PHP_EOL;
-        echo $end_date->format('Y-m-d'), PHP_EOL;
         return $this->_storage->select($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $header);
     }
 }

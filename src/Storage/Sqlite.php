@@ -156,7 +156,7 @@ class Sqlite Implements \GSC\Storage\StorageInterface
         $sth->bindValue(':end_date', $end_date);
         $sth->execute();
 
-        $table = $table + $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $table = $table + $sth->fetchAll(\PDO::FETCH_NUM);
 
         return $table;
     }
