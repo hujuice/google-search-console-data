@@ -23,12 +23,11 @@ Your secret file can be saved as `www_example_com-secret.json` (according to you
 You can have many secret files for one installed application.
 
 ### 3. Create a configuration file ###
-Copy the `www_example_com.ini.example` file as `www_example_com.ini` (according to your website name) and edit it following your preferences.  
-What you really MUST edit is the site and the secret file names in the `[google]` section. All the other values are tuning values.
+Copy the `www_example_com.ini.example` file as `configs/www_example_com.ini` (according to your website name) and edit it following your preferences.
 
 If you decide to store the data in a file based way (CSV or SQLite), you will also manage the file permissions.  
 If you decide to store the data in a MySQL database, you will also prepare an empty database.  
-For SQLite or MySQL databases, the applications is smart enough to generate the file structure or the empty table befor the first run.  
+For SQLite or MySQL databases, the applications is smart enough to generate the file structure or the empty table before the first run.  
 
 You can have many configuration files for one installed application.
 
