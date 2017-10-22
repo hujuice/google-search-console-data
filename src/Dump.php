@@ -234,22 +234,29 @@ class Dump
 
             // Query!
             self::logger('Requesting data for ' . $date_as_string . ' PST.', \LOG_INFO);
-            $query = $service->searchanalytics->query($this->_config['google']['site'], $request);
-            self::logger('Data obtained. Storing...', \LOG_INFO);
-            foreach($query->getRows() as $row) {
-                $this->_storage->insert(array(
-                    'date'          => $date_as_string,
-                    'query'         => $row->keys[0],
-                    'page'          => $row->keys[1],
-                    'country'       => $row->keys[2],
-                    'device'        => $row->keys[3],
-                    'clicks'        => $row->clicks,
-                    'impressions'   => $row->impressions,
-                    'position'      => $row->position
-                ));
+            $data = $service->searchanalytics->query($this->_config['google']['site'], $request)->getRows();
+            if ($num_record = count($data)) {
+                self::logger($num_record . 'obtained. Storing...', \LOG_INFO);
+                foreach($data as $row) {
+                    $this->_storage->insert(array(
+                        'date'          => $date_as_string,
+                        'query'         => $row->keys[0],
+                        'page'          => $row->keys[1],
+                        'country'       => $row->keys[2],
+                        'device'        => $row->keys[3],
+                        'clicks'        => $row->clicks,
+                        'impressions'   => $row->impressions,
+                        'position'      => $row->position
+                    ));
+                }
+                
+                self::logger('Data for ' . $date_as_string . ' PST stored.', \LOG_NOTICE);
+                
+            } else {
+                self::logger('No records for ' . $date_as_string . ' PST. Skip.', \LOG_INFO);
             }
 
-            self::logger('Data for ' . $date_as_string . ' PST stored.', \LOG_NOTICE);
+            
 
             $date->add(new \DateInterval('P1D'));
             $count++;
