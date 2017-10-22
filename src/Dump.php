@@ -53,7 +53,7 @@ class Dump
      * @var \DateTimeZone   The Google preferred timezone
      */
     protected $_googleTz;
-    
+
     /**
      * The configuration file path (where the secret file also is)
      *
@@ -144,7 +144,7 @@ class Dump
             $this->_config[$this->_config['main']['storage']] = array(); // Default value
         }
         $this->_storage = new Storage($this->_config['main']['storage'], $this->_config[$this->_config['main']['storage']]);
-        
+
         // Remember the configuration file dir
         $this->_configDir = dirname($config_path);
     }
@@ -181,13 +181,13 @@ class Dump
         if (empty($this->_config['google']['secret'])) {
             throw new \Exception('The google secret file MUST be defined in the configuration file.');
         }
-        
+
         // Secret file
         $secret_file = realpath($this->_configDir . '/' . $this->_config['google']['secret']);
         if ( ! is_readable($secret_file)) {
             throw new \Exception('The google secret file is not readable.');
         }
-        
+
         // Start
         self::logger('Google Search Console Dump started.', \LOG_INFO);
         $google_now = new \DateTime('now', $this->_googleTz);
