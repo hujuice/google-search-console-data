@@ -10,7 +10,7 @@
 // =============================================================
 // Application path
 $application_path = '/usr/local/gsc';
-$config_path = $application_path . '/www_example_com.ini';
+$config_path = $application_path . '/configs/www_example_com.ini';
 
 // Autoloading
 // See https://getcomposer.org/doc/01-basic-usage.md#autoloading
