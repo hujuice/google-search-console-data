@@ -68,6 +68,6 @@ class Mysql extends DbAbstract Implements \GSC\Storage\StorageInterface
         $this->_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         // Build the table if not exists
-        parent::__construct(array());
+        parent::__construct($config);
     }
 }
