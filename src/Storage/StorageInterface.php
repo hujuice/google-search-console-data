@@ -61,7 +61,7 @@ interface StorageInterface
      * @param array                 The record
      * @throw \Exception            When the array is not well formed
      */
-     public function insert(array $data);
+    public function insert(array $data);
 
      /**
       * Read a list of record, selected by date interval
