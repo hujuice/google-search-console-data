@@ -84,24 +84,12 @@ class Dump
      */
     public function _exceptionHandler(\Throwable $e)
     {
-        $message = $e->getMessage();
-
-        // Stack trace file
-        if (empty($stack_trace = $this->_config['main']['stack_trace'])) {
-            $stack_trace = '/tmp/google_search_console_dump.stack_trace'; // Default value
-        }
-
-        if (file_put_contents($stack_trace, $e->__toString() . PHP_EOL)) {
-            $message .= ' A complete stack trace is at ' . $this->_config['main']['stack_trace'];
-        } else {
-            $message .= ' Also, the cofnigured stack trace dump file is not writable.';
-        }
-
-        // Logging
-        self::logger($message, \LOG_ERR);
+        $tmpfile = tempnam("/tmp", "GSC");
+        file_put_contents($tmpfile, $e->__toString());
+        self::logger($e->getMessage() . ' The complete stack trace is at ' . $tmpfile, \LOG_ERR);
 
         // Immediately exit
-        die('Abort' . PHP_EOL);
+        die();
     }
 
     /**
@@ -112,10 +100,6 @@ class Dump
      */
     public function __construct($config_path)
     {
-        // Not intended as web application
-        ini_set('display_errors', 1);
-        ini_set('html_errors', 0);
-
         // Manage the system logger
         openlog('gscd', LOG_CONS | LOG_ODELAY, LOG_USER);
 

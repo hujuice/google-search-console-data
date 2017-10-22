@@ -4,10 +4,6 @@
 ; The unused storage configurations below will be ignored
 storage = "csv"
 
-; Here is where the last Exception stack trace will be stored
-; Be sure to have proper permissions
-stack_trace = "/tmp/google_search_console_dump.stack_trace"
-
 [google]
 ; The site property registerd in Google Search Console
 site = "www.example.com"

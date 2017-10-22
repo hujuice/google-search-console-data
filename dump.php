@@ -23,6 +23,11 @@
  * @version     1.0.0
  */
 
+// Not intended as web application
+ini_set('display_errors', 1);
+ini_set('html_errors', 0);
+
+// Check for arguments
 if (empty($argv[1])) {
     die('You MUST provide a configuration file as argument. Run, for example, \'php dump.php www_example_com.ini\'.' . PHP_EOL);
 }
