@@ -253,7 +253,7 @@ class Dump
                 self::logger('Data for ' . $date_as_string . ' PST stored.', \LOG_NOTICE);
                 
             } else {
-                self::logger('No records for ' . $date_as_string . ' PST. Skip.', \LOG_INFO);
+                self::logger('No records for ' . $date_as_string . ' PST. Skip.', \LOG_NOTICE);
             }
 
             
