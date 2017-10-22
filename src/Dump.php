@@ -69,7 +69,10 @@ class Dump
      */
     public static function logger($message, $priority = \LOG_INFO)
     {
-        echo $message, PHP_EOL;
+        if (PHP_SAPI == 'cli') {
+            echo $message, PHP_EOL;
+        }
+
         if ($priority < 6) {
             syslog($priority, $message);
         }
@@ -84,12 +87,16 @@ class Dump
      */
     public function _exceptionHandler(\Throwable $e)
     {
-        $tmpfile = tempnam("/tmp", "GSC");
-        file_put_contents($tmpfile, $e->__toString());
-        self::logger($e->getMessage() . ' The complete stack trace is at ' . $tmpfile, \LOG_ERR);
+        if (PHP_SAPI == 'cli') {
+            $tmpfile = tempnam("/tmp", "GSC");
+            file_put_contents($tmpfile, $e->__toString());
+            self::logger($e->getMessage() . ' The complete stack trace is at ' . $tmpfile, \LOG_ERR);
 
-        // Immediately exit
-        die();
+            // Immediately exit
+            die();
+        } else {
+            throw $e;
+        }
     }
 
     /**

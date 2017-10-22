@@ -79,8 +79,11 @@ class CSV Implements \GSC\Storage\StorageInterface
             throw new \Exception('You MUST set a file path in configuration');
         }
 
+        // Try to open in rw, else in r only
         if ( ! $this->_handle = fopen($config['path'], 'at+')) {
-            throw new \Exception('Unable to open the CSV file ' . $config['path'] . '.');
+            if ( ! $this->_handle = fopen($config['path'], 'rt')) { // Will give error on writing
+                throw new \Exception('Unable to open the CSV file ' . $config['path'] . '.');
+            }
         }
     }
 
@@ -130,7 +133,9 @@ class CSV Implements \GSC\Storage\StorageInterface
      */
     public function insert(array $data)
     {
-        fputcsv($this->_handle, array_values($data), self::DELIMITER, self::ENCLOSURE, self::ESCAPE);
+        if (false === fputcsv($this->_handle, array_values($data), self::DELIMITER, self::ENCLOSURE, self::ESCAPE)) {
+            throw new \Exception('Unable to write to the CSV file.');
+        }
     }
 
      /**
