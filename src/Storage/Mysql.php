@@ -51,10 +51,10 @@ class Mysql extends DbAbstract Implements \GSC\Storage\StorageInterface
             $config['port'] = 3306; // Default value
         }
         if (empty($config['name'])) {
-            $config['name'] = 'google_search_console_dump';
+            $config['name'] = 'gscd'; // Default value
         }
         if (empty($config['user'])) {
-            $config['user'] = 'google_search_console_dump';
+            $config['user'] = 'gscd'; // Default value
         }
         
         // Create the PDO object

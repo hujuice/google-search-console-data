@@ -1,8 +1,11 @@
+; Commented settings show their default values
+; Uncomment and edit if needed
+
 [main]
 ; You can choose between 'sqlite', 'csv' and 'mysql' storage system
 ; Each storage system has its own configuration below
 ; The unused storage configurations below will be ignored
-storage = "csv"
+;storage = "csv"
 
 [google]
 ; The site property registerd in Google Search Console
@@ -13,19 +16,19 @@ site = "www.example.com"
 secret = "www_example_com-secret.json"
 
 ; When filling the storage system, do not request data for more than max_days days
-max_days = 10
+;max_days = 10
 
 ; No more than limit records
-limit = 5000
+;limit = 5000
 
 [csv]
 ; Path to the CSV file
-; Be sure to have proper permissions
+; Be sure to have proper permissions for the wanted directory
 path = "/var/lib/google_search_console_dump/www_example_com.csv"
 
 [sqlite]
 ; Path to the SQLite file
-; Be sure to have proper permissions
+; Be sure to have proper permissions for the wanted directory
 path = "/var/lib/google_search_console_dump/gscd.sqlite"
 
 ; You can store data for more sites in one db, so provide the table name
@@ -33,10 +36,10 @@ table_name = "www_example_com"
 
 [mysql]
 ; MySQL/MariaDb parameters
-host = "localhost"
-port = 3306
-name = "gscd"
-user = "gscd"
+;host = "localhost"
+;port = 3306
+;name = "gscd"
+;user = "gscd"
 pass = "my_very_secret_password"
 
 ; You can store data for more sites in one db, so provide the table name
