@@ -203,6 +203,12 @@ class Dump
         }
 
         // Google API client initialization
+        if (empty($this->_config['google']['max_days'])) {
+            $this->_config['google']['max_days'] = 10; // Default value
+        }
+        if (empty($this->_config['google']['limit'])) {
+            $this->_config['google']['limit'] = 5000; // Default value
+        }
         putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $secret_file);
         $client = new \Google_Client();
         $client->useApplicationDefaultCredentials();
@@ -210,16 +216,10 @@ class Dump
         $service = new \Google_Service_Webmasters($client);
         $request = new \Google_Service_Webmasters_SearchAnalyticsQueryRequest();
         $request->setDimensions(array('query', 'page', 'country', 'device'));
-        if (empty($this->_config['google']['limit'])) {
-            $this->_config['google']['limit'] = 5000; // Default value
-        }
         $request->setRowLimit($this->_config['google']['limit']);
 
         // Prepare the iteration parameters
         $date = $start_date;
-        if (empty($this->_config['google']['max_days'])) {
-            $this->_config['google']['max_days'] = 10; // Default value
-        }
         self::logger('Will grab data for no more than ' . $this->_config['google']['max_days'] . ' days.', \LOG_INFO);
         self::logger('================================', \LOG_INFO);
         $count = 0;
@@ -255,8 +255,6 @@ class Dump
             } else {
                 self::logger('No records for ' . $date_as_string . ' PST. Skip.', \LOG_NOTICE);
             }
-
-            
 
             $date->add(new \DateInterval('P1D'));
             $count++;
