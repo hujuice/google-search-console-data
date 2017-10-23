@@ -61,10 +61,10 @@ abstract class DbAbstract Implements \GSC\Storage\StorageInterface
      */
     public function __construct(array $config)
     {
-        if (empty($config['_table_name'])) {
-            $config['_table_name'] = 'analysis';
+        if (empty($config['table_name'])) {
+            throw new \Exception('You MUST provide a valid table name for the database.');
         }
-        $this->_table_name = $config['_table_name'];
+        $this->_table_name = $config['table_name'];
         
         // Create the table if not exist
         $sql  = 'CREATE TABLE IF NOT EXISTS ' . $this->_table_name . ' (';

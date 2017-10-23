@@ -236,7 +236,7 @@ class Dump
             self::logger('Requesting data for ' . $date_as_string . ' PST.', \LOG_INFO);
             $data = $service->searchanalytics->query($this->_config['google']['site'], $request)->getRows();
             if ($num_record = count($data)) {
-                self::logger($num_record . 'obtained. Storing...', \LOG_INFO);
+                self::logger($num_record . ' record(s) obtained. Storing...', \LOG_INFO);
                 foreach($data as $row) {
                     $this->_storage->insert(array(
                         'date'          => $date_as_string,
