@@ -81,11 +81,17 @@ class Dump
     /**
      * Dump an exception and die
      *
-     * NOTE Be careful when back to PHP 5: http://lt1.php.net/manual/en/function.set-exception-handler.php
+     * The type declaration is different for version of PHP below 7
+     * In PHP 7+, the required type is \Throwable, so the method should be
+     * public function _exceptionHandler(\Throwable $e)
+     * In PHP 5 the required type should be \Exception, so the method should be
+     * public function _exceptionHandler(\Exception $e)
+     * http://php.net/manual/en/function.set-exception-handler.php#refsect1-function.set-exception-handler-parameters
+     * For the moment, the type declaration has been removed
      *
      * @param Throwable    The running exception
      */
-    public function _exceptionHandler(\Throwable $e)
+    public function _exceptionHandler($e)
     {
         if (PHP_SAPI == 'cli') {
             $tmpfile = tempnam("/tmp", "GSC");
