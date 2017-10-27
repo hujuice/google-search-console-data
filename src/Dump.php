@@ -277,13 +277,7 @@ class Dump
         $start_date = new \DateTime($start_date);
         $end_date = new \DateTime($end_date);
 
-        // Check if $end_date is consequent to $start_date
-        $interval = $start_date->diff($end_date);
-        if ('-' == $interval->format('%r')) {
-            return array();
-        }
-
         // Request!
-        return $this->_storage->select($start_date->format('Y-m-d'), $end_date->format('Y-m-d'), $header);
+        return $this->_storage->select($start_date, $end_date, $header);
     }
 }

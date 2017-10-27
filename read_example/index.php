@@ -26,12 +26,12 @@ $last_date = $gscd->lastDate();
 
 // Dates
 if (empty($_GET['start_date'])) {
-    $start_date = 'today -1 day';
+    $start_date = 'today -3 day';
 } else {
     $start_date = $_GET['start_date'];
 }
 if (empty($_GET['end_date'])) {
-    $end_date = 'today -3 days';
+    $end_date = 'today -1 days';
 } else {
     $end_date = $_GET['end_date'];
 }

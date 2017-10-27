@@ -92,8 +92,8 @@ class Storage
     /**
      * Store a record
      *
-     * @param array                 The record
-     * @throw \Exception            When the array is not well formed
+     * @param array                     The record
+     * @throw \Exception                When the array is not well formed
      */
     public function insert(array $data)
     {
@@ -108,10 +108,10 @@ class Storage
     /**
      * Read a list of record, selected by date interval
      *
-     * @param string $start_date   The lowest date
-     * @param string $end_date     The highest date
-     * @param boolean $header      Return the table header as first row
-     * @return array               The data table
+     * @param \DateTime $start_date     The lowest date
+     * @param \DateTme $end_date        The highest date
+     * @param boolean $header           Return the table header as first row
+     * @return array                    The data table
      */
     public function select($start_date, $end_date, $header = false)
     {
@@ -119,7 +119,13 @@ class Storage
         if ($header) {
             $table[] = array_keys(\GSC\Storage::$analysis);
         }
+        
+        // Check if $end_date is consequent to $start_date
+        $interval = $start_date->diff($end_date);
+        if ('-' == $interval->format('%r')) {
+            return $table;
+        }
 
-        return $table + $this->_storage->select($start_date, $end_date);
+        return $table + $this->_storage->select($start_date->format('Y-m-d'), $end_date->format('Y-m-d'));
     }
 }
