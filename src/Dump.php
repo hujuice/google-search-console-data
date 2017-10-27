@@ -48,13 +48,6 @@ class Dump
     protected $_storage;
 
     /**
-     * Google timezone
-     *
-     * @var \DateTimeZone   The Google preferred timezone
-     */
-    protected $_googleTz;
-
-    /**
      * The configuration file path (where the secret file also is)
      *
      * @var string          The configuration file path (where the secret file also is)
@@ -113,6 +106,9 @@ class Dump
      */
     public function __construct($config_path)
     {
+        // Set the timezone to the Google timezone
+        date_default_timezone_set('PST8PDT');
+        
         // Manage the system logger
         openlog('gscd', LOG_CONS | LOG_ODELAY, LOG_USER);
 
@@ -129,9 +125,6 @@ class Dump
         if (empty($this->_config['google']['site'])) {
             throw new \Exception('The google site MUST be defined in the configuration file.');
         }
-
-        // Google timezone
-        $this->_googleTz = new \DateTimeZone('PST');
 
         // Initialize the storage
         if (empty($this->_config['main']['storage'])) {
@@ -187,19 +180,19 @@ class Dump
 
         // Start
         self::logger('Google Search Console Dump started.', \LOG_INFO);
-        $google_now = new \DateTime('now', $this->_googleTz);
+        $google_now = new \DateTime('now');
         self::logger('Please, note that Google date is now ' . $google_now->format('Y-m-d') . '.', \LOG_INFO);
 
         // Set the starting date
         if ($last = $this->_storage->lastDate()) {
-            $start_date = new \DateTime($last . ' + 1 day', $this->_googleTz);
+            $start_date = new \DateTime($last . ' + 1 day');
         } else {
-            $start_date = new \DateTime('today -90 days', $this->_googleTz);
+            $start_date = new \DateTime('today -90 days');
         }
-        self::logger('Start date ' . $start_date->format('Y-m-d') . ' PST.', \LOG_INFO);
+        self::logger('Start date ' . $start_date->format('Y-m-d') . ' ' . date_default_timezone_get() . '.', \LOG_INFO);
 
         // Skip if the starting date is today, error if after today
-        $today = new \DateTime('today', $this->_googleTz);
+        $today = new \DateTime('today');
         $interval = $start_date->diff($today)->format('%r%a');
         if (0 == $interval) {
             self::logger('The dump is already updated: nothing to do.', \LOG_NOTICE);
@@ -239,7 +232,7 @@ class Dump
             $request->setEndDate($date_as_string);
 
             // Query!
-            self::logger('Requesting data for ' . $date_as_string . ' PST.', \LOG_INFO);
+            self::logger('Requesting data for ' . $date_as_string . ' ' . date_default_timezone_get() . '.', \LOG_INFO);
             $data = $service->searchanalytics->query($this->_config['google']['site'], $request)->getRows();
             if ($num_record = count($data)) {
                 self::logger($num_record . ' record(s) obtained. Storing...', \LOG_INFO);
@@ -256,10 +249,10 @@ class Dump
                     ));
                 }
                 
-                self::logger('Data for ' . $date_as_string . ' PST stored.', \LOG_NOTICE);
+                self::logger('Data for ' . $date_as_string . ' ' . date_default_timezone_get() . ' stored.', \LOG_NOTICE);
                 
             } else {
-                self::logger('No records for ' . $date_as_string . ' PST. Skip.', \LOG_NOTICE);
+                self::logger('No records for ' . $date_as_string . ' ' . date_default_timezone_get() . '. Skip.', \LOG_NOTICE);
             }
 
             $date->add(new \DateInterval('P1D'));
@@ -281,8 +274,8 @@ class Dump
      */
     public function read($start_date = 'today -30 days', $end_date = 'today -1 day', $header = false)
     {
-        $start_date = new \DateTime($start_date, $this->_googleTz);
-        $end_date = new \DateTime($end_date, $this->_googleTz);
+        $start_date = new \DateTime($start_date);
+        $end_date = new \DateTime($end_date);
 
         // Check if $end_date is consequent to $start_date
         $interval = $start_date->diff($end_date);
