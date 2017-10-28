@@ -108,7 +108,7 @@ class Dump
     {
         // Set the timezone to the Google timezone
         date_default_timezone_set('PST8PDT');
-        
+
         // Manage the system logger
         openlog('gscd', LOG_CONS | LOG_ODELAY, LOG_USER);
 
@@ -248,11 +248,13 @@ class Dump
                         'position'      => $row->position
                     ));
                 }
-                
+
                 self::logger('Data for ' . $date_as_string . ' ' . date_default_timezone_get() . ' stored.', \LOG_NOTICE);
-                
+
             } else {
-                self::logger('No records for ' . $date_as_string . ' ' . date_default_timezone_get() . '. Skip.', \LOG_NOTICE);
+                self::logger('No records for ' . $date_as_string . ' ' . date_default_timezone_get() . '. Stop.', \LOG_NOTICE);
+                // Retrieve data for days after an empty day has no sense
+                break;
             }
 
             $date->add(new \DateInterval('P1D'));
